@@ -28,3 +28,108 @@
 ### 3. ├──> InputGame (Extends Game, adds user input handling)
 ### 4. │
 ### 5. └──> AdvancedGame (Extends InputGame, adds advanced hints)
+## Output
+```
+// Step 1 : Base class - handles core game logic
+public class Game {
+    protected String wordToGuess;
+    protected int attempts;
+    protected char[] revealesLetters;
+
+public Game(String wordToGuess){
+    this.wordToGuess = wordToGuess;
+    this.attempts = 0;
+    this.revealesLetters = new char [wordToGuess.length()];
+    for(int i = 0; i < revealesLetters.length; i++){
+        revealesLetters[i] = '-';
+    }
+}
+public void playGame(){
+    System.out.println("Welcome to the Word Guessing Game!");
+    System.out.println("Try to guess the word!");
+}   
+
+public void displayHint(){
+    System.out.println("Hint: The word has " + wordToGuess.length() + " letters.");
+
+}
+
+public String getRevealedWord(){
+    return new String(revealesLetters);
+}
+}
+
+import java.util.Scanner;
+
+// Step 2 : Single-level inheritance - Adds user input handling
+public class InputGame extends Game {
+    protected Scanner sc;
+
+    public InputGame(String wordToGuess){
+        super(wordToGuess);
+        this.sc = new Scanner(System.in);
+    
+    } 
+    
+@Override
+public void playGame(){
+    super.playGame();
+    String userGuess = "";
+    while (!userGuess.equalsIgnoreCase(wordToGuess)){
+        displayHint();
+        System.out.println("Enter your guess: ");
+        userGuess = sc.nextLine();
+        attempts++;
+
+        if (userGuess.equalsIgnoreCase(wordToGuess)) {
+            System.out.println("Congratulations! You've guessed the word in " + attempts + " attempts."); 
+        }else{
+            System.out.println("Incorrect guess.Try again!");
+            System.out.println("Revealed so far: " + getRevealedWord());
+        }
+    }
+  }
+}
+
+import java.util.Random;
+
+// Step 3: Multilevel inheritance - Enhances hints by revealing letters
+public class AdvancedGame extends InputGame {
+    private Random random;
+
+    public AdvancedGame (String wordToGuess){
+        super(wordToGuess);
+        this.random = new Random();
+    }
+@Override
+    public void displayHint(){
+        super.displayHint();
+        if (attempts > 0){
+            revealRandomLetter();
+            System.out.println("Revealed so far: " + getRevealedWord());
+        }
+    }
+    private void revealRandomLetter() {
+        int index;
+        do {
+            index = random.nextInt(wordToGuess.length());
+        }while (revealesLetters[index] != '-');
+        revealesLetters[index] = wordToGuess.charAt(index);
+
+    }   
+}
+
+import java.util.Random;
+
+// Step 4 : Main class to run the game 
+public class WordGuessingGame {
+    public static void main(String[] args) {
+        String[] wordPool = {"inhertance","polymorphism","encapsulation","abstraction","interface"};
+        String wordToGuess = wordPool[new Random().nextInt(wordPool.length)];
+
+        AdvancedGame game = new AdvancedGame(wordToGuess);
+        game.playGame();
+    }  
+}
+```
+[githublink]()
